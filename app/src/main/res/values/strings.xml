@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Pick A Place</string>
+    <string name="login_txt"><u>Login</u></string>
+    <string name="register_txt"><u>Register</u></string>
 </resources>
