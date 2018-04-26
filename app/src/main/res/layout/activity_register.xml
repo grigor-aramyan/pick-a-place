@@ -7,10 +7,49 @@
     android:layout_height="match_parent"
     tools:context=".activities.RegisterActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Register"
-        android:layout_centerInParent="true" />
+        android:orientation="vertical"
+        android:layout_centerVertical="true"
+        android:gravity="center_horizontal"
+        android:padding="12dp">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/email_edt_id"
+            android:background="@drawable/edittext_bottom_border"
+            android:hint="Email"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_horizontal"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/password_edt_id"
+            android:background="@drawable/edittext_bottom_border"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_horizontal"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/confirm_password_edt_id"
+            android:background="@drawable/edittext_bottom_border"
+            android:hint="Confirm password"
+            android:inputType="textPassword"
+            android:layout_marginBottom="12dp"
+            android:gravity="center_horizontal"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/register_btn_id"
+            android:text="Register"/>
+
+    </LinearLayout>
 
 </RelativeLayout>
