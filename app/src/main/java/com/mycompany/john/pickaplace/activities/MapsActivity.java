@@ -6,6 +6,7 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -30,6 +31,19 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.mycompany.john.pickaplace.R;
+import com.mycompany.john.pickaplace.models.Coordinates;
+import com.mycompany.john.pickaplace.models.MyCustomLocation;
+import com.mycompany.john.pickaplace.retrofit.RetrofitInstance;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -49,6 +63,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (marker.getTag().equals(TAG)) {
                 Toast.makeText(getApplicationContext(), "lang: " + marker.getPosition().latitude,
                         Toast.LENGTH_LONG).show();
+
+                mPickedCoordinates = new Coordinates(marker.getPosition().latitude + "",
+                        marker.getPosition().longitude + "");
             }
         }
     };
@@ -58,7 +75,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.save_btn:
-                    Toast.makeText(getApplicationContext(), "save...", Toast.LENGTH_LONG).show();
+                    Call<ResponseBody> call = RetrofitInstance.getBackendService()
+                            .createAnonymousLocation(new MyCustomLocation(mPickedCoordinates));
+                    call.enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            try {
+
+                                if (response.code() == 201) {
+                                    JSONObject data = new JSONObject(response.body().string());
+                                    final String code = data.getJSONObject("data").getString("code");
+
+                                    startActivity(new Intent(getApplicationContext(), SummaryActivity.class)
+                                        .putExtra("code", code));
+                                }
+
+                            } catch (IOException ioExp) {
+                                Toast.makeText(getApplicationContext(), "Something wrong happened! " +
+                                        "Try to restart the app, plz))", Toast.LENGTH_LONG).show();
+                            } catch (JSONException jexp) {
+                                Toast.makeText(getApplicationContext(), "Something wrong with our servers! " +
+                                        "Try later, plz))", Toast.LENGTH_LONG).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), "Error: " +
+                                t.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
                     break;
                 default:
                     break;
@@ -75,6 +121,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LocationCallback mLocationCallback;
     final LocationRequest mLocationRequest = new LocationRequest();
+
+    private Coordinates mPickedCoordinates;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +156,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void setInitialMarker(Location location) {
 
         if (location == null) {
+            mPickedCoordinates = new Coordinates("-34", "151");
+
             // Add a marker in Sydney and move the camera
             LatLng sydney = new LatLng(-34, 151);
             mMap.addMarker(new MarkerOptions()
@@ -116,6 +166,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .draggable(true)).setTag(TAG);
             mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         } else {
+            mPickedCoordinates = new Coordinates(location.getLatitude() + "",
+                    location.getLongitude() + "");
+
             LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
             mMap.addMarker(new MarkerOptions()
                     .position(currentPosition)
@@ -169,7 +222,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             mLocationCallback,
                             null);
                 } catch (SecurityException sExp) {
-                    Toast.makeText(getApplicationContext(), "Can't find your location." +
+                    Toast.makeText(getApplicationContext(), "Can't find your MyCustomLocation." +
                             " Try to drag and drop marker to check needed place from here", Toast.LENGTH_LONG).show();
                 }
             }
@@ -201,10 +254,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             mLocationCallback,
                             null);
                 } catch (SecurityException sExp) {
-                    Toast.makeText(getApplicationContext(), "Can't find your location." +
+                    Toast.makeText(getApplicationContext(), "Can't find your MyCustomLocation." +
                             " Try to drag and drop marker to check needed place from here", Toast.LENGTH_LONG).show();
                 }
             } else {
+                mPickedCoordinates = new Coordinates("-34", "151");
+
                 // Add a marker in Sydney and move the camera
                 LatLng sydney = new LatLng(-34, 151);
                 mMap.addMarker(new MarkerOptions()

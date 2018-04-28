@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setTitle("Enter the Code")
                 .setView(view)
-                .setMessage("Shared code for picked location")
+                .setMessage("Shared code for picked MyCustomLocation")
                 .setPositiveButton("Check", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
