@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mycompany.john.pickaplace.R;
+import com.mycompany.john.pickaplace.models.User;
+import com.mycompany.john.pickaplace.retrofit.RetrofitInstance;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -73,7 +86,43 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Both fields are required!",
                                     Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(getApplicationContext(), "checking...", Toast.LENGTH_LONG).show();
+                            Call<ResponseBody> call = RetrofitInstance.getBackendService()
+                                    .singInUser(new User(enteredEmail, enteredPassword));
+                            call.enqueue(new Callback<ResponseBody>() {
+                                @Override
+                                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    try {
+
+                                        if (response.code() == 200) {
+                                            JSONObject data = new JSONObject(response.body().string())
+                                                    .getJSONObject("data")
+                                                    .getJSONObject("user");
+                                            final String id = data.getString("id");
+                                            final String email = data.getString("email");
+
+                                            Log.e("mmm", "signed in. id: " + id + "\nmail: " + email);
+
+                                        } else {
+                                            Toast.makeText(getApplicationContext(), "Error " +
+                                                    "signing in! Check your email/password, plz))",
+                                                    Toast.LENGTH_LONG).show();
+                                        }
+
+                                    } catch (IOException ioExp) {
+                                        Toast.makeText(getApplicationContext(), "Something wrong happened! " +
+                                                "Try to restart the app, plz))", Toast.LENGTH_LONG).show();
+                                    } catch (JSONException jexp) {
+                                        Toast.makeText(getApplicationContext(), "Something wrong with our servers! " +
+                                                "Try later, plz))", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                    Toast.makeText(getApplicationContext(), "Error: " +
+                                            t.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
                         }
                     }
                 })

@@ -1,6 +1,8 @@
 package com.mycompany.john.pickaplace.retrofit;
 
 import com.mycompany.john.pickaplace.models.MyCustomLocation;
+import com.mycompany.john.pickaplace.models.User;
+import com.mycompany.john.pickaplace.models.UserWrapper;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -13,4 +15,12 @@ public interface BackendService {
     @Headers("Content-Type: application/json")
     @POST("api/locations")
     Call<ResponseBody> createAnonymousLocation(@Body MyCustomLocation myCustomLocation);
+
+    @Headers("Content-Type: application/json")
+    @POST("api/users")
+    Call<ResponseBody> registerUser(@Body UserWrapper user);
+
+    @Headers("Content-Type: application/json")
+    @POST("api/users/sign_in")
+    Call<ResponseBody> singInUser(@Body User user);
 }
