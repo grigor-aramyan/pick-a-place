@@ -74,7 +74,7 @@ public class RegisterActivity extends AppCompatActivity {
                         return;
                     }
 
-                    Call<ResponseBody> call = RetrofitInstance.getBackendService()
+                    Call<ResponseBody> call = RetrofitInstance.getBackendService(getApplicationContext())
                             .registerUser(new UserWrapper(new User(email, password)));
                     call.enqueue(new Callback<ResponseBody>() {
                         @Override

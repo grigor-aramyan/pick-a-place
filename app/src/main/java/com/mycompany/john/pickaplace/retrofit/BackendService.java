@@ -22,5 +22,9 @@ public interface BackendService {
 
     @Headers("Content-Type: application/json")
     @POST("api/users/sign_in")
-    Call<ResponseBody> singInUser(@Body User user);
+    Call<ResponseBody> signInUser(@Body User user);
+
+    @Headers("Content-Type: application/json")
+    @POST("api/users/sign_out")
+    Call<ResponseBody> signOutUser();
 }

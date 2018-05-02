@@ -75,7 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.save_btn:
-                    Call<ResponseBody> call = RetrofitInstance.getBackendService()
+                    Call<ResponseBody> call = RetrofitInstance.getBackendService(getApplicationContext())
                             .createAnonymousLocation(new MyCustomLocation(mPickedCoordinates));
                     call.enqueue(new Callback<ResponseBody>() {
                         @Override

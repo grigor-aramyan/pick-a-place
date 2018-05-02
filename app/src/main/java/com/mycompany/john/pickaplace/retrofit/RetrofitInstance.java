@@ -1,5 +1,11 @@
 package com.mycompany.john.pickaplace.retrofit;
 
+import android.content.Context;
+
+import com.mycompany.john.pickaplace.interceptors.AddCookiesInterceptor;
+import com.mycompany.john.pickaplace.interceptors.ReceivedCookiesInterceptor;
+
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -11,12 +17,20 @@ public class RetrofitInstance {
     private RetrofitInstance() {
     }
 
-    public static BackendService getBackendService() {
+    public static BackendService getBackendService(Context context) {
         if (mBackend != null) {
             return mBackend;
         } else {
+            OkHttpClient client = new OkHttpClient();
+            OkHttpClient.Builder builder = new OkHttpClient.Builder();
+
+            builder.addInterceptor(new AddCookiesInterceptor(context)); // VERY VERY IMPORTANT
+            builder.addInterceptor(new ReceivedCookiesInterceptor(context)); // VERY VERY IMPORTANT
+            client = builder.build();
+
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://192.168.1.8:4000/")
+                    .baseUrl("http://192.168.1.6:4000/")
+                    .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 

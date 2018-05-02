@@ -3,4 +3,5 @@
     <string name="login_txt"><u>Login</u></string>
     <string name="register_txt"><u>Register</u></string>
     <string name="title_activity_maps">Map</string>
+    <string name="logout"><u>Logout</u></string>
 </resources>
