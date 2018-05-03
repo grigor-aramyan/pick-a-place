@@ -4,4 +4,7 @@ public class Statics {
     public static final String SHARED_PREF_FOR_APP = "shared-pref-for-app";
     public static final String CURRENT_USER_ID = "current-user-id";
     public static final String CURRENT_USER_EMAIL = "current-user-email";
+
+    public static final String LOCATION_LONGITUDE = "location-longitude";
+    public static final String LOCATION_LATITUDE = "location-latitude";
 }

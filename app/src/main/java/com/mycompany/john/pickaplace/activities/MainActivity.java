@@ -239,7 +239,10 @@ public class MainActivity extends AppCompatActivity {
                                                 final String longitude = data.getString("longitude");
                                                 final String latitude = data.getString("latitude");
 
-                                                Log.e("mmm", "long: " + longitude + "\nlat: " + latitude);
+                                                startActivity(new Intent(getApplicationContext(), ShowLocationMapsActivity.class)
+                                                    .putExtra(Statics.LOCATION_LATITUDE, latitude)
+                                                    .putExtra(Statics.LOCATION_LONGITUDE, longitude));
+                                                
                                             } else {
                                                 Toast.makeText(getApplicationContext(), "Something unexpected " +
                                                         "happened. Try later, plz))", Toast.LENGTH_LONG).show();
