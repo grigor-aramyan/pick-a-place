@@ -1,5 +1,6 @@
 package com.mycompany.john.pickaplace.retrofit;
 
+import com.mycompany.john.pickaplace.models.LocationCode;
 import com.mycompany.john.pickaplace.models.MyCustomLocation;
 import com.mycompany.john.pickaplace.models.User;
 import com.mycompany.john.pickaplace.models.UserWrapper;
@@ -27,4 +28,8 @@ public interface BackendService {
     @Headers("Content-Type: application/json")
     @POST("api/users/sign_out")
     Call<ResponseBody> signOutUser();
+
+    @Headers("Content-Type: application/json")
+    @POST("api/locations/get_location")
+    Call<ResponseBody> getLocationByCode(@Body LocationCode locationCode);
 }

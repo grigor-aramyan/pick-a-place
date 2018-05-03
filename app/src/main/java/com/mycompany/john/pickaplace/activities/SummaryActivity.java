@@ -86,4 +86,11 @@ public class SummaryActivity extends AppCompatActivity {
         mGPIcon = (ImageView) findViewById(R.id.gp_icon);
         mGPIcon.setOnClickListener(mClickListener);
     }
+
+    @Override
+    protected void onDestroy() {
+        that = null;
+
+        super.onDestroy();
+    }
 }

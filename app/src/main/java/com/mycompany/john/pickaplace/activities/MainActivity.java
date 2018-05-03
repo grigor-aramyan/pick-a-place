@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mycompany.john.pickaplace.R;
+import com.mycompany.john.pickaplace.models.LocationCode;
 import com.mycompany.john.pickaplace.models.User;
 import com.mycompany.john.pickaplace.retrofit.RetrofitInstance;
 import com.mycompany.john.pickaplace.utils.Statics;
@@ -50,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.code_btn_id:
                     prepareEnterCodeDialog();
-                    Toast.makeText(getApplicationContext(), "code...", Toast.LENGTH_LONG).show();
                     break;
                 default:
                     break;
@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setTitle("Enter the Code")
                 .setView(view)
-                .setMessage("Shared code for picked MyCustomLocation")
+                .setMessage("Shared code for your event, plz))")
                 .setPositiveButton("Check", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -220,7 +220,51 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Enter some code " +
                             "for me to check :)", Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(getApplicationContext(), "checking...", Toast.LENGTH_LONG).show();
+                            Call<ResponseBody> call = RetrofitInstance.getBackendService(getApplicationContext())
+                                    .getLocationByCode(new LocationCode(enteredCode));
+                            call.enqueue(new Callback<ResponseBody>() {
+                                @Override
+                                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    if (response.code() == 200) {
+                                        try {
+                                            JSONObject initialData = new JSONObject(response.body().string());
+                                            if (initialData.has("errors")) {
+                                                Toast.makeText(getApplicationContext(),
+                                                        initialData.getJSONObject("errors").getString("detail"),
+                                                        Toast.LENGTH_LONG).show();
+                                            } else if (initialData.has("data")) {
+                                                JSONObject data = initialData.getJSONObject("data");
+                                                final int locationId = data.getInt("id");
+                                                final String code = data.getString("code");
+                                                final String longitude = data.getString("longitude");
+                                                final String latitude = data.getString("latitude");
+
+                                                Log.e("mmm", "long: " + longitude + "\nlat: " + latitude);
+                                            } else {
+                                                Toast.makeText(getApplicationContext(), "Something unexpected " +
+                                                        "happened. Try later, plz))", Toast.LENGTH_LONG).show();
+                                            }
+                                        } catch (IOException ioExp) {
+                                            Toast.makeText(getApplicationContext(), "Something wrong with app! " +
+                                                    "Try to restart it, plz", Toast.LENGTH_LONG).show();
+                                        } catch (JSONException jExp) {
+                                            Toast.makeText(getApplicationContext(), "Something wrong with our " +
+                                                    "servers. Try later, plz!! We are trying hard to fix any issue " +
+                                                    "that occurs..", Toast.LENGTH_LONG).show();
+                                        }
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "Error getting location! " +
+                                                "Check your code/try later, plz. We are trying hard to " +
+                                                "fix any issue that may occur!", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                    Toast.makeText(getApplicationContext(), "Error: " +
+                                            t.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
                         }
                     }
                 })
