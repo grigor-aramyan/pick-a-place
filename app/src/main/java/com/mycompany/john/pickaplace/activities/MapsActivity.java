@@ -1,14 +1,18 @@
 package com.mycompany.john.pickaplace.activities;
 
+import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -65,7 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Toast.LENGTH_LONG).show();
 
                 mPickedCoordinates = new Coordinates(marker.getPosition().latitude + "",
-                        marker.getPosition().longitude + "");
+                        marker.getPosition().longitude + "", "");
             }
         }
     };
@@ -75,36 +79,90 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.save_btn:
-                    Call<ResponseBody> call = RetrofitInstance.getBackendService(getApplicationContext())
-                            .createAnonymousLocation(new MyCustomLocation(mPickedCoordinates));
-                    call.enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            try {
+                    final String message = mMessageEdt.getText().toString();
+                    if (message.isEmpty()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(that);
 
-                                if (response.code() == 201) {
-                                    JSONObject data = new JSONObject(response.body().string());
-                                    final String code = data.getJSONObject("data").getString("code");
+                        builder.setTitle("Empty message")
+                                .setMessage("Location will be submitted without any message!")
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Call<ResponseBody> call = RetrofitInstance.getBackendService(getApplicationContext())
+                                                .createAnonymousLocation(new MyCustomLocation(mPickedCoordinates));
+                                        call.enqueue(new Callback<ResponseBody>() {
+                                            @Override
+                                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                                try {
 
-                                    startActivity(new Intent(getApplicationContext(), SummaryActivity.class)
-                                        .putExtra("code", code));
+                                                    if (response.code() == 201) {
+                                                        JSONObject data = new JSONObject(response.body().string());
+                                                        final String code = data.getJSONObject("data").getString("code");
+                                                        final String message = data.getJSONObject("data").getString("message");
+
+                                                        startActivity(new Intent(getApplicationContext(), SummaryActivity.class)
+                                                                .putExtra("code", code));
+                                                    }
+
+                                                } catch (IOException ioExp) {
+                                                    Toast.makeText(getApplicationContext(), "Something wrong happened! " +
+                                                            "Try to restart the app, plz))", Toast.LENGTH_LONG).show();
+                                                } catch (JSONException jexp) {
+                                                    Toast.makeText(getApplicationContext(), "Something wrong with our servers! " +
+                                                            "Try later, plz))", Toast.LENGTH_LONG).show();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                                Toast.makeText(getApplicationContext(), "Error: " +
+                                                        t.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+                                    }
+                                });
+                        builder.setCancelable(true);
+                        builder.create().show();
+                    } else {
+                        mPickedCoordinates.setMessage(message);
+                        Call<ResponseBody> call = RetrofitInstance.getBackendService(getApplicationContext())
+                                .createAnonymousLocation(new MyCustomLocation(mPickedCoordinates));
+                        call.enqueue(new Callback<ResponseBody>() {
+                            @Override
+                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                try {
+
+                                    if (response.code() == 201) {
+                                        JSONObject data = new JSONObject(response.body().string());
+                                        final String code = data.getJSONObject("data").getString("code");
+                                        final String message = data.getJSONObject("data").getString("message");
+
+                                        startActivity(new Intent(getApplicationContext(), SummaryActivity.class)
+                                                .putExtra("code", code));
+                                    }
+
+                                } catch (IOException ioExp) {
+                                    Toast.makeText(getApplicationContext(), "Something wrong happened! " +
+                                            "Try to restart the app, plz))", Toast.LENGTH_LONG).show();
+                                } catch (JSONException jexp) {
+                                    Toast.makeText(getApplicationContext(), "Something wrong with our servers! " +
+                                            "Try later, plz))", Toast.LENGTH_LONG).show();
                                 }
-
-                            } catch (IOException ioExp) {
-                                Toast.makeText(getApplicationContext(), "Something wrong happened! " +
-                                        "Try to restart the app, plz))", Toast.LENGTH_LONG).show();
-                            } catch (JSONException jexp) {
-                                Toast.makeText(getApplicationContext(), "Something wrong with our servers! " +
-                                        "Try later, plz))", Toast.LENGTH_LONG).show();
                             }
-                        }
 
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            Toast.makeText(getApplicationContext(), "Error: " +
-                                t.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                Toast.makeText(getApplicationContext(), "Error: " +
+                                        t.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
                     break;
                 default:
                     break;
@@ -118,11 +176,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private Button mSaveBtn;
+    private EditText mMessageEdt;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LocationCallback mLocationCallback;
     final LocationRequest mLocationRequest = new LocationRequest();
 
     private Coordinates mPickedCoordinates;
+
+    private Activity that;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +193,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        that = this;
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -156,7 +219,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void setInitialMarker(Location location) {
 
         if (location == null) {
-            mPickedCoordinates = new Coordinates("-34", "151");
+            mPickedCoordinates = new Coordinates("-34", "151", "");
 
             // Add a marker in Sydney and move the camera
             LatLng sydney = new LatLng(-34, 151);
@@ -167,7 +230,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         } else {
             mPickedCoordinates = new Coordinates(location.getLatitude() + "",
-                    location.getLongitude() + "");
+                    location.getLongitude() + "", "");
 
             LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
             mMap.addMarker(new MarkerOptions()
@@ -181,6 +244,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void initViews() {
         mSaveBtn = (Button) findViewById(R.id.save_btn);
         mSaveBtn.setOnClickListener(mClickListener);
+
+        mMessageEdt = (EditText) findViewById(R.id.message_edt_id);
     }
 
 
@@ -258,7 +323,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             " Try to drag and drop marker to check needed place from here", Toast.LENGTH_LONG).show();
                 }
             } else {
-                mPickedCoordinates = new Coordinates("-34", "151");
+                mPickedCoordinates = new Coordinates("-34", "151", "");
 
                 // Add a marker in Sydney and move the camera
                 LatLng sydney = new LatLng(-34, 151);
@@ -269,5 +334,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        that = null;
+
+        super.onDestroy();
     }
 }

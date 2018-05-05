@@ -41,11 +41,13 @@
 
         <activity
             android:name=".activities.MapsActivity"
-            android:label="@string/title_activity_maps" />
+            android:label="@string/title_activity_maps"
+            android:windowSoftInputMode="stateUnchanged"/>
         <activity android:name=".activities.SummaryActivity" />
         <activity
             android:name=".activities.ShowLocationMapsActivity"
-            android:label="@string/title_activity_show_location_maps"></activity>
+            android:label="@string/title_activity_show_location_maps"
+            android:windowSoftInputMode="stateUnchanged" />
     </application>
 
 </manifest>

@@ -2,6 +2,7 @@ package com.mycompany.john.pickaplace.activities;
 
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.widget.EditText;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -16,6 +17,9 @@ public class ShowLocationMapsActivity extends FragmentActivity implements OnMapR
 
     private GoogleMap mMap;
 
+    // ui components
+    private EditText mMessageEdt;
+
     // data
     private String mLatitude, mLongitude;
 
@@ -28,12 +32,25 @@ public class ShowLocationMapsActivity extends FragmentActivity implements OnMapR
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        initViews();
+
         if (getIntent().hasExtra(Statics.LOCATION_LONGITUDE)) {
             mLongitude = getIntent().getStringExtra(Statics.LOCATION_LONGITUDE);
         }
         if (getIntent().hasExtra(Statics.LOCATION_LATITUDE)) {
             mLatitude = getIntent().getStringExtra(Statics.LOCATION_LATITUDE);
         }
+        if (getIntent().hasExtra(Statics.LOCATION_MESSAGE)) {
+            final String message = getIntent().getStringExtra(Statics.LOCATION_MESSAGE);
+            if (message != null && !message.equals("null") && !message.isEmpty()) {
+                mMessageEdt.setText(message);
+            }
+        }
+    }
+
+    private void initViews() {
+        mMessageEdt = (EditText) findViewById(R.id.message_edt_id);
+        mMessageEdt.setEnabled(false);
     }
 
 

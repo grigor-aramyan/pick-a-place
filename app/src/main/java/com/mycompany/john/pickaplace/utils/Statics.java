@@ -7,4 +7,5 @@ public class Statics {
 
     public static final String LOCATION_LONGITUDE = "location-longitude";
     public static final String LOCATION_LATITUDE = "location-latitude";
+    public static final String LOCATION_MESSAGE = "location-message";
 }

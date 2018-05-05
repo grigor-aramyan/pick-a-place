@@ -238,11 +238,13 @@ public class MainActivity extends AppCompatActivity {
                                                 final String code = data.getString("code");
                                                 final String longitude = data.getString("longitude");
                                                 final String latitude = data.getString("latitude");
+                                                final String message = data.getString("message");
 
                                                 startActivity(new Intent(getApplicationContext(), ShowLocationMapsActivity.class)
                                                     .putExtra(Statics.LOCATION_LATITUDE, latitude)
-                                                    .putExtra(Statics.LOCATION_LONGITUDE, longitude));
-                                                
+                                                    .putExtra(Statics.LOCATION_LONGITUDE, longitude)
+                                                    .putExtra(Statics.LOCATION_MESSAGE, message));
+
                                             } else {
                                                 Toast.makeText(getApplicationContext(), "Something unexpected " +
                                                         "happened. Try later, plz))", Toast.LENGTH_LONG).show();
