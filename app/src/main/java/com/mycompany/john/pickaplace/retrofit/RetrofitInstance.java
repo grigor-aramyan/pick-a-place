@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.mycompany.john.pickaplace.interceptors.AddCookiesInterceptor;
 import com.mycompany.john.pickaplace.interceptors.ReceivedCookiesInterceptor;
+import com.mycompany.john.pickaplace.utils.Statics;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -29,7 +30,7 @@ public class RetrofitInstance {
             client = builder.build();
 
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://192.168.1.8:4000/")
+                    .baseUrl("http://" + Statics.LOCALHOST_IP + ":4000/")
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();

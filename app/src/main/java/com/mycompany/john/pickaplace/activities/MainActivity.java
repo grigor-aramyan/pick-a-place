@@ -18,10 +18,13 @@ import com.mycompany.john.pickaplace.R;
 import com.mycompany.john.pickaplace.models.LocationCode;
 import com.mycompany.john.pickaplace.models.User;
 import com.mycompany.john.pickaplace.retrofit.RetrofitInstance;
+import com.mycompany.john.pickaplace.utils.PhoenixChannels;
 import com.mycompany.john.pickaplace.utils.Statics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.phoenixframework.channels.IErrorCallback;
+import org.phoenixframework.channels.ISocketOpenCallback;
 
 import java.io.IOException;
 
@@ -68,6 +71,35 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initViews();
+
+        connectSocket();
+    }
+
+    private void connectSocket() {
+        PhoenixChannels.getSocket(getApplicationContext())
+                .onOpen(new ISocketOpenCallback() {
+                    @Override
+                    public void onOpen() {
+                        Log.e("mmm", "socket opened");
+                    }
+                })
+                .onError(new IErrorCallback() {
+                    @Override
+                    public void onError(String reason) {
+                        Toast.makeText(getApplicationContext(), "Problems occured! Live position broadcasting " +
+                                        "and Live tracking won't be available. We are trying hard to fix issues",
+                                Toast.LENGTH_LONG).show();
+                        Log.e("mmm", "socket connection error: " + reason);
+                    }
+                });
+        try {
+            PhoenixChannels.getSocket(getApplicationContext()).connect();
+        } catch (IOException ioExp) {
+            Toast.makeText(getApplicationContext(), "Problems occured! Live position broadcasting " +
+                    "and Live tracking won't be available. We are trying hard to fix issues",
+                    Toast.LENGTH_LONG).show();
+            Log.e("mmm", "socket connection exception: " + ioExp.getLocalizedMessage());
+        }
     }
 
     private void logoutUser() {
