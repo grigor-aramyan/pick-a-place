@@ -39,6 +39,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
+                case R.id.live_broadcasting_btn_id:
+                    prepareLiveBroadcasting();
+                    break;
+                case R.id.live_tracking_btn_id:
+                    prepareLiveTracking();
+                    break;
                 case R.id.logout_link:
                     logoutUser();
                     break;
@@ -61,9 +67,104 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private void prepareLiveBroadcasting() {
+
+    }
+
+    private void prepareLiveTracking() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.layout_enter_shared_code_dialog, null);
+        final EditText codeEdt = (EditText) view.findViewById(R.id.code_edt_id);
+
+        builder.setTitle("Enter the Code")
+                .setView(view)
+                .setMessage("Shared code for Live position, plz))")
+                .setPositiveButton("Check", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String enteredCode = codeEdt.getText().toString();
+                        if (enteredCode.isEmpty()) {
+                            Toast.makeText(getApplicationContext(), "Enter some code " +
+                                    "for me to check :)", Toast.LENGTH_LONG).show();
+                        } else {
+                            Call<ResponseBody> call = RetrofitInstance.getBackendService(getApplicationContext())
+                                    .getLiveLocationByCode(new LocationCode(enteredCode));
+                            call.enqueue(new Callback<ResponseBody>() {
+                                @Override
+                                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                                    if (response.code() == 200) {
+                                        try {
+                                            JSONObject initialData = new JSONObject(response.body().string());
+                                            if (initialData.has("errors")) {
+                                                Toast.makeText(getApplicationContext(),
+                                                        initialData.getJSONObject("errors").getString("detail"),
+                                                        Toast.LENGTH_LONG).show();
+                                            } else if (initialData.has("data")) {
+                                                JSONObject data = initialData.getJSONObject("data");
+                                                final int locationId = data.getInt("id");
+                                                final String code = data.getString("code");
+                                                final String longitude = data.getString("longitude");
+                                                final String latitude = data.getString("latitude");
+                                                final String message = data.getString("message");
+
+                                                if (PhoenixChannels.getSocket(getApplicationContext()) != null &&
+                                                        PhoenixChannels.getSocket(getApplicationContext()).isConnected()) {
+
+                                                    startActivity(new Intent(getApplicationContext(), ShowLiveLocationMapsActivity.class)
+                                                            .putExtra(Statics.LOCATION_LATITUDE, latitude)
+                                                            .putExtra(Statics.LOCATION_LONGITUDE, longitude)
+                                                            .putExtra(Statics.LOCATION_MESSAGE, message)
+                                                            .putExtra(Statics.LOCATION_CODE, code));
+
+                                                } else {
+                                                    Toast.makeText(getApplicationContext(), "Can't fetch live stream " +
+                                                            "now. Try later, plz ))", Toast.LENGTH_LONG).show();
+                                                }
+
+                                            } else {
+                                                Toast.makeText(getApplicationContext(), "Something unexpected " +
+                                                        "happened. Try later, plz))", Toast.LENGTH_LONG).show();
+                                            }
+                                        } catch (IOException ioExp) {
+                                            Toast.makeText(getApplicationContext(), "Something wrong with app! " +
+                                                    "Try to restart it, plz", Toast.LENGTH_LONG).show();
+                                        } catch (JSONException jExp) {
+                                            Toast.makeText(getApplicationContext(), "Something wrong with our " +
+                                                    "servers. Try later, plz!! We are trying hard to fix any issue " +
+                                                    "that occurs..", Toast.LENGTH_LONG).show();
+                                        }
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "Error getting location! " +
+                                                "Check your code/try later, plz. We are trying hard to " +
+                                                "fix any issue that may occur!", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                                    Toast.makeText(getApplicationContext(), "Error: " +
+                                            t.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        builder.setCancelable(true);
+        builder.create().show();
+    }
+
     // UI components
     private TextView mLoginTxt, mRegisterTxt, mLogoutTxt;
-    private Button mPickAPlaceBtn, mEnterCodeBtn;
+    private Button mPickAPlaceBtn, mEnterCodeBtn,
+        mLiveBroadcastingBtn, mLiveTrackingBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -326,5 +427,9 @@ public class MainActivity extends AppCompatActivity {
         mPickAPlaceBtn.setOnClickListener(mClickListener);
         mEnterCodeBtn = (Button) findViewById(R.id.code_btn_id);
         mEnterCodeBtn.setOnClickListener(mClickListener);
+        mLiveBroadcastingBtn = (Button) findViewById(R.id.live_broadcasting_btn_id);
+        mLiveBroadcastingBtn.setOnClickListener(mClickListener);
+        mLiveTrackingBtn = (Button) findViewById(R.id.live_tracking_btn_id);
+        mLiveTrackingBtn.setOnClickListener(mClickListener);
     }
 }

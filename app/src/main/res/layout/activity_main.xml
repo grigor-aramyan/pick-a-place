@@ -60,6 +60,22 @@
             android:layout_height="wrap_content"
             android:id="@+id/code_btn_id"
             android:text="Enter the Code"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="4dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/live_broadcasting_btn_id"
+            android:text="Live broadcast position"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="4dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/live_tracking_btn_id"
+            android:text="Live track position"
             android:layout_gravity="center_horizontal" />
 
     </LinearLayout>

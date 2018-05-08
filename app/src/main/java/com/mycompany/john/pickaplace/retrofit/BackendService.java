@@ -32,4 +32,8 @@ public interface BackendService {
     @Headers("Content-Type: application/json")
     @POST("api/locations/get_location")
     Call<ResponseBody> getLocationByCode(@Body LocationCode locationCode);
+
+    @Headers("Content-Type: application/json")
+    @POST("api/locations/get_live_location")
+    Call<ResponseBody> getLiveLocationByCode(@Body LocationCode locationCode);
 }

@@ -42,12 +42,15 @@
         <activity
             android:name=".activities.MapsActivity"
             android:label="@string/title_activity_maps"
-            android:windowSoftInputMode="stateUnchanged"/>
+            android:windowSoftInputMode="stateUnchanged" />
         <activity android:name=".activities.SummaryActivity" />
         <activity
             android:name=".activities.ShowLocationMapsActivity"
             android:label="@string/title_activity_show_location_maps"
             android:windowSoftInputMode="stateUnchanged" />
+        <activity
+            android:name=".activities.ShowLiveLocationMapsActivity"
+            android:label="@string/title_activity_show_live_location_maps"></activity>
     </application>
 
 </manifest>

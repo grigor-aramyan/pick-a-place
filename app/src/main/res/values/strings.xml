@@ -5,4 +5,5 @@
     <string name="title_activity_maps">Map</string>
     <string name="logout"><u>Logout</u></string>
     <string name="title_activity_show_location_maps">Map</string>
+    <string name="title_activity_show_live_location_maps">Map</string>
 </resources>
