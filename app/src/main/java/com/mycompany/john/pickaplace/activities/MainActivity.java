@@ -68,7 +68,13 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void prepareLiveBroadcasting() {
-
+        if (PhoenixChannels.getSocket(getApplicationContext()) != null &&
+                PhoenixChannels.getSocket(getApplicationContext()).isConnected()) {
+            startActivity(new Intent(getApplicationContext(), BroadcastLiveLocationMapsActivity.class));
+        } else {
+            Toast.makeText(getApplicationContext(), "No persistent connection with servers! " +
+                    "Try to restart the app or try later, plz ))", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void prepareLiveTracking() {

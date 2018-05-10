@@ -18,6 +18,10 @@ public interface BackendService {
     Call<ResponseBody> createAnonymousLocation(@Body MyCustomLocation myCustomLocation);
 
     @Headers("Content-Type: application/json")
+    @POST("api/locations/live")
+    Call<ResponseBody> createLiveAnonymousLocation(@Body MyCustomLocation myCustomLocation);
+
+    @Headers("Content-Type: application/json")
     @POST("api/users")
     Call<ResponseBody> registerUser(@Body UserWrapper user);
 
