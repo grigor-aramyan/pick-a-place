@@ -51,6 +51,7 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
 
     // ui components
     private Marker mLivePositionMarker;
+    private Marker mMyPositionMarker;
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LocationCallback mLocationCallback;
@@ -75,6 +76,7 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
                 }
 
                 Location location = locationResult.getLastLocation();
+                updateMyLocation(location);
 
             }
         };
@@ -95,6 +97,17 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
 
         setInitialMarker();
         subscribeToChannelMessages();
+    }
+
+    private void updateMyLocation(Location location) {
+        if (mMyPositionMarker == null) {
+            LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
+            mMyPositionMarker = mMap.addMarker(new MarkerOptions()
+                    .position(currentPosition)
+                    .title("My position"));
+        } else {
+            mMyPositionMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+        }
     }
 
     private void subscribeToChannelMessages() {
@@ -128,6 +141,10 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
                         Log.e("mmm", "envelope: " + envelope.toString());
                     }
                 });
+    }
+
+    private void updateTrackedPositionMarker(Double latitude, Double longitude) {
+        mLivePositionMarker.setPosition(new LatLng(latitude, longitude));
     }
 
     private void setInitialMarker() {
