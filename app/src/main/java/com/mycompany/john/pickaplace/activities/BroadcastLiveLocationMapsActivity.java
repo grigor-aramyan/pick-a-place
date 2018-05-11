@@ -3,13 +3,16 @@ package com.mycompany.john.pickaplace.activities;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -32,17 +35,24 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.mycompany.john.pickaplace.R;
+import com.mycompany.john.pickaplace.eventBusModels.UpdateBroadcastedLocationEvent;
 import com.mycompany.john.pickaplace.models.Coordinates;
 import com.mycompany.john.pickaplace.models.MyCustomLocation;
 import com.mycompany.john.pickaplace.retrofit.RetrofitInstance;
 import com.mycompany.john.pickaplace.utils.PhoenixChannels;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.phoenixframework.channels.Envelope;
 import org.phoenixframework.channels.IMessageCallback;
 
 import java.io.IOException;
+import java.nio.DoubleBuffer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -134,9 +144,8 @@ public class BroadcastLiveLocationMapsActivity extends FragmentActivity implemen
                 .on(PhoenixChannels.CHANNEL_MSG_GET_LIVE_LOCATION, new IMessageCallback() {
                     @Override
                     public void onMessage(Envelope envelope) {
-                        Log.e("mmm", "envelope: " + envelope.toString());
 
-                    // ToDo: delegate msg and update marker visually, set last broadcast edt info
+                        EventBus.getDefault().post(new UpdateBroadcastedLocationEvent(envelope.getPayload()));
                     }
                 });
     }
@@ -203,6 +212,10 @@ public class BroadcastLiveLocationMapsActivity extends FragmentActivity implemen
                 .position(currentPosition)
                 .title("You are here"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.0f));
+    }
+
+    private void resetMyLocationMarker(String longitude, String latitude) {
+        mMyPositionMarker.setPosition(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
     }
 
 
@@ -289,5 +302,54 @@ public class BroadcastLiveLocationMapsActivity extends FragmentActivity implemen
                         Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateBroadcastedLocationEvent(UpdateBroadcastedLocationEvent event) {
+        JsonNode node = event.getNode();
+
+        final String longitude = node.get("longitude").asText();
+        final String latitude = node.get("latitude").asText();
+        final String code = node.get("code").asText();
+
+        if (code.equals(mLiveLocationCode)) {
+            resetMyLocationMarker(longitude, latitude);
+            updateBroadcastInfo();
+        }
+    }
+
+    private void updateBroadcastInfo() {
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss SS");
+
+        mInfoEdt.setTextColor(ResourcesCompat.getColor(getResources(), R.color.colorWhite, null));
+        mInfoEdt.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorKhaki, null));
+        mInfoEdt.setText("Last Broadcast: " + formatter.format(new Date()));
+
+        new CountDownTimer(2000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                mInfoEdt.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.full_border, null));
+                mInfoEdt.setTextColor(ResourcesCompat.getColor(getResources(), R.color.colorBlack, null));
+            }
+        }.start();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+
+        super.onStop();
     }
 }

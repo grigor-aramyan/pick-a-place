@@ -33,4 +33,5 @@ dependencies {
     implementation('com.github.grigor-aramyan:JavaPhoenixChannels:master-SNAPSHOT') {
         exclude module: 'groovy-all'
     }
+    compile 'org.greenrobot:eventbus:3.1.1'
 }
