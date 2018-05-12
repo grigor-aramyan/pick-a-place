@@ -3,12 +3,15 @@ package com.mycompany.john.pickaplace.activities;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.content.res.ResourcesCompat;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -29,14 +32,20 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.mycompany.john.pickaplace.R;
-import com.mycompany.john.pickaplace.models.Coordinates;
+import com.mycompany.john.pickaplace.eventBusModels.DeleteBroadcastedLiveLocationRecordEvent;
+import com.mycompany.john.pickaplace.eventBusModels.UpdateBroadcastedLocationEvent;
 import com.mycompany.john.pickaplace.utils.PhoenixChannels;
 import com.mycompany.john.pickaplace.utils.Statics;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.phoenixframework.channels.Envelope;
 import org.phoenixframework.channels.IMessageCallback;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ShowLiveLocationMapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -52,6 +61,7 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
     // ui components
     private Marker mLivePositionMarker;
     private Marker mMyPositionMarker;
+    private EditText mInfoEdt, mCodeEdt;
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LocationCallback mLocationCallback;
@@ -96,7 +106,14 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
         }
 
         setInitialMarker();
-        subscribeToChannelMessages();
+        joinChannel();
+    }
+
+    private void initViews() {
+        mInfoEdt = (EditText) findViewById(R.id.info_edt_id);
+        mInfoEdt.setEnabled(false);
+        mCodeEdt = (EditText) findViewById(R.id.code_edt_id);
+        mCodeEdt.setEnabled(false);
     }
 
     private void updateMyLocation(Location location) {
@@ -110,14 +127,14 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
         }
     }
 
-    private void subscribeToChannelMessages() {
+    private void joinChannel() {
         try {
             PhoenixChannels.getChannel()
                     .join()
                     .receive("ok", new IMessageCallback() {
                         @Override
                         public void onMessage(Envelope envelope) {
-                            setupMessageHandler();
+                            setupMessageHandlers();
                         }
                     })
                     .receive("ignore", new IMessageCallback() {
@@ -133,12 +150,20 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
         }
     }
 
-    private void setupMessageHandler() {
+    private void setupMessageHandlers() {
         PhoenixChannels.getChannel()
                 .on(PhoenixChannels.CHANNEL_MSG_GET_LIVE_LOCATION, new IMessageCallback() {
                     @Override
                     public void onMessage(Envelope envelope) {
-                        Log.e("mmm", "envelope: " + envelope.toString());
+                        EventBus.getDefault().post(new UpdateBroadcastedLocationEvent(envelope.getPayload()));
+                    }
+                });
+
+        PhoenixChannels.getChannel()
+                .on(PhoenixChannels.CHANNEL_MSG_DELETE_LIVE_LOCATION, new IMessageCallback() {
+                    @Override
+                    public void onMessage(Envelope envelope) {
+                        EventBus.getDefault().post(new DeleteBroadcastedLiveLocationRecordEvent(envelope.getPayload()));
                     }
                 });
     }
@@ -238,5 +263,84 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
                         "restart the app and check settings, plz", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDeleteBroadcastedLiveLocationRecordEvent(DeleteBroadcastedLiveLocationRecordEvent event) {
+        JsonNode node = event.getNode();
+        final String code = node.get("code").asText();
+
+        if (code.equals(mCode)) {
+
+            SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss SS");
+            mInfoEdt.setTextColor(ResourcesCompat.getColor(getResources(), R.color.colorWhite, null));
+
+            if (node.has("msg")) {
+                mInfoEdt.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorOrange, null));
+                mInfoEdt.setText("Last Fetch: " + formatter.format(new Date()) +
+                    " || Broadcast stopped!");
+
+                Toast.makeText(getApplicationContext(), "Location broadcast stopped!",
+                        Toast.LENGTH_LONG).show();
+            } else if (node.has("error")) {
+                mInfoEdt.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorRed, null));
+                mInfoEdt.setText("Last Fetch: " + formatter.format(new Date()) +
+                        " || Broadcast stopped with error!");
+
+                Toast.makeText(getApplicationContext(), "Error while trying to stop " +
+                        "broadcast )) It's error on our servers, but maybe you won't be able to " +
+                        "get updates on this location now!! Contact your broadcaster, plz )) We " +
+                        "are trying hard to fix all issues in our system!", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateBroadcastedLocationEvent(UpdateBroadcastedLocationEvent event) {
+        JsonNode node = event.getNode();
+
+        final String longitude = node.get("longitude").asText();
+        final String latitude = node.get("latitude").asText();
+        final String code = node.get("code").asText();
+
+        if (code.equals(mCode)) {
+            updateTrackedPositionMarker(Double.parseDouble(latitude), Double.parseDouble(longitude));
+            updateBroadcastInfo();
+        }
+    }
+
+    private void updateBroadcastInfo() {
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss SS");
+
+        mInfoEdt.setTextColor(ResourcesCompat.getColor(getResources(), R.color.colorWhite, null));
+        mInfoEdt.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorKhaki, null));
+        mInfoEdt.setText("Last Fetch: " + formatter.format(new Date()));
+
+        new CountDownTimer(2000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                mInfoEdt.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.full_border, null));
+                mInfoEdt.setTextColor(ResourcesCompat.getColor(getResources(), R.color.colorBlack, null));
+            }
+        }.start();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+
+        super.onStop();
     }
 }

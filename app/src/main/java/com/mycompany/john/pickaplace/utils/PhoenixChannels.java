@@ -15,11 +15,12 @@ public class PhoenixChannels {
     private static Channel channel;
 
     private static String SOCKET_URI = "ws://" + Statics.LOCALHOST_IP + ":4000/socket/websocket";
-    private static String CHANNEL_NAME = "live_tracking:general";
+    public static String CHANNEL_NAME = "live_tracking:general";
 
     // channel messages
     public static final String CHANNEL_MSG_GET_LIVE_LOCATION = "live_tracking:get_live_location";
     public static final String CHANNEL_MSG_UPDATE_LIVE_LOCATION = "live_tracking:update_live_location";
+    public static final String CHANNEL_MSG_DELETE_LIVE_LOCATION = "live_tracking:delete_live_location";
 
     public static Channel getChannel() {
         if (channel == null) {

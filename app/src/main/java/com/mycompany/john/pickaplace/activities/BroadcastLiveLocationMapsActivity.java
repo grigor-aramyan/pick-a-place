@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -35,6 +34,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.mycompany.john.pickaplace.R;
+import com.mycompany.john.pickaplace.eventBusModels.DeleteBroadcastedLiveLocationRecordEvent;
 import com.mycompany.john.pickaplace.eventBusModels.UpdateBroadcastedLocationEvent;
 import com.mycompany.john.pickaplace.models.Coordinates;
 import com.mycompany.john.pickaplace.models.MyCustomLocation;
@@ -50,7 +50,6 @@ import org.phoenixframework.channels.Envelope;
 import org.phoenixframework.channels.IMessageCallback;
 
 import java.io.IOException;
-import java.nio.DoubleBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -123,7 +122,7 @@ public class BroadcastLiveLocationMapsActivity extends FragmentActivity implemen
                     .receive("ok", new IMessageCallback() {
                         @Override
                         public void onMessage(Envelope envelope) {
-                            setupMessageHandler();
+                            setupMessageHandlers();
                         }
                     })
                     .receive("ignore", new IMessageCallback() {
@@ -139,13 +138,21 @@ public class BroadcastLiveLocationMapsActivity extends FragmentActivity implemen
         }
     }
 
-    private void setupMessageHandler() {
+    private void setupMessageHandlers() {
         PhoenixChannels.getChannel()
                 .on(PhoenixChannels.CHANNEL_MSG_GET_LIVE_LOCATION, new IMessageCallback() {
                     @Override
                     public void onMessage(Envelope envelope) {
 
                         EventBus.getDefault().post(new UpdateBroadcastedLocationEvent(envelope.getPayload()));
+                    }
+                });
+
+        PhoenixChannels.getChannel()
+                .on(PhoenixChannels.CHANNEL_MSG_DELETE_LIVE_LOCATION, new IMessageCallback() {
+                    @Override
+                    public void onMessage(Envelope envelope) {
+                        EventBus.getDefault().post(new DeleteBroadcastedLiveLocationRecordEvent(envelope.getPayload()));
                     }
                 });
     }
@@ -305,6 +312,23 @@ public class BroadcastLiveLocationMapsActivity extends FragmentActivity implemen
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onDeleteBroadcastedLiveLocationRecordEvent(DeleteBroadcastedLiveLocationRecordEvent event) {
+        JsonNode node = event.getNode();
+        final String code = node.get("code").asText();
+
+        if (code.equals(mLiveLocationCode)) {
+            if (node.has("msg")) {
+                Toast.makeText(getApplicationContext(), "Live location data deleted",
+                        Toast.LENGTH_LONG).show();
+            } else if (node.has("error")) {
+                Toast.makeText(getApplicationContext(), "Error occured while deleting " +
+                        "your location data. We are trying hard to fix things. Thanks " +
+                        "for bearing with us ))", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdateBroadcastedLocationEvent(UpdateBroadcastedLocationEvent event) {
         JsonNode node = event.getNode();
 
@@ -351,5 +375,24 @@ public class BroadcastLiveLocationMapsActivity extends FragmentActivity implemen
         EventBus.getDefault().unregister(this);
 
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
+
+        ObjectNode node = new ObjectNode(JsonNodeFactory.instance)
+                .put("code", mLiveLocationCode);
+        try {
+            PhoenixChannels.getChannel()
+                    .push(PhoenixChannels.CHANNEL_MSG_DELETE_LIVE_LOCATION, node);
+        } catch (IOException ioExp) {
+            Toast.makeText(getApplicationContext(), "Can't delete your location data from " +
+                    "our servers! Restart the app, plz! We are trying hard to fix all issues ))",
+                    Toast.LENGTH_LONG).show();
+        }
+
+        super.onDestroy();
     }
 }
