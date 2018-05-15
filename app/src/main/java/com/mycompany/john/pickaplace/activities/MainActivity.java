@@ -3,12 +3,16 @@ package com.mycompany.john.pickaplace.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import com.transitionseverywhere.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -20,6 +24,7 @@ import com.mycompany.john.pickaplace.models.User;
 import com.mycompany.john.pickaplace.retrofit.RetrofitInstance;
 import com.mycompany.john.pickaplace.utils.PhoenixChannels;
 import com.mycompany.john.pickaplace.utils.Statics;
+import com.transitionseverywhere.Recolor;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,13 +72,45 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void prepareLiveBroadcasting() {
-        if (PhoenixChannels.getSocket(getApplicationContext()) != null &&
-                PhoenixChannels.getSocket(getApplicationContext()).isConnected()) {
-            startActivity(new Intent(getApplicationContext(), BroadcastLiveLocationMapsActivity.class));
-        } else {
-            Toast.makeText(getApplicationContext(), "No persistent connection with servers! " +
-                    "Try to restart the app or try later, plz ))", Toast.LENGTH_LONG).show();
+    // UI components
+    private TextView mLoginTxt, mRegisterTxt, mLogoutTxt;
+    private Button mPickAPlaceBtn, mEnterCodeBtn,
+        mLiveBroadcastingBtn, mLiveTrackingBtn;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        initViews();
+
+        connectSocket();
+    }
+
+    private void connectSocket() {
+        PhoenixChannels.getSocket(getApplicationContext())
+                .onOpen(new ISocketOpenCallback() {
+                    @Override
+                    public void onOpen() {
+                        Log.e("mmm", "socket opened");
+                    }
+                })
+                .onError(new IErrorCallback() {
+                    @Override
+                    public void onError(String reason) {
+                        Toast.makeText(getApplicationContext(), "Problems occured! Live position broadcasting " +
+                                        "and Live tracking won't be available. We are trying hard to fix issues",
+                                Toast.LENGTH_LONG).show();
+                        Log.e("mmm", "socket connection error: " + reason);
+                    }
+                });
+        try {
+            PhoenixChannels.getSocket(getApplicationContext()).connect();
+        } catch (IOException ioExp) {
+            Toast.makeText(getApplicationContext(), "Problems occured! Live position broadcasting " +
+                    "and Live tracking won't be available. We are trying hard to fix issues",
+                    Toast.LENGTH_LONG).show();
+            Log.e("mmm", "socket connection exception: " + ioExp.getLocalizedMessage());
         }
     }
 
@@ -167,45 +204,13 @@ public class MainActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    // UI components
-    private TextView mLoginTxt, mRegisterTxt, mLogoutTxt;
-    private Button mPickAPlaceBtn, mEnterCodeBtn,
-        mLiveBroadcastingBtn, mLiveTrackingBtn;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        initViews();
-
-        connectSocket();
-    }
-
-    private void connectSocket() {
-        PhoenixChannels.getSocket(getApplicationContext())
-                .onOpen(new ISocketOpenCallback() {
-                    @Override
-                    public void onOpen() {
-                        Log.e("mmm", "socket opened");
-                    }
-                })
-                .onError(new IErrorCallback() {
-                    @Override
-                    public void onError(String reason) {
-                        Toast.makeText(getApplicationContext(), "Problems occured! Live position broadcasting " +
-                                        "and Live tracking won't be available. We are trying hard to fix issues",
-                                Toast.LENGTH_LONG).show();
-                        Log.e("mmm", "socket connection error: " + reason);
-                    }
-                });
-        try {
-            PhoenixChannels.getSocket(getApplicationContext()).connect();
-        } catch (IOException ioExp) {
-            Toast.makeText(getApplicationContext(), "Problems occured! Live position broadcasting " +
-                    "and Live tracking won't be available. We are trying hard to fix issues",
-                    Toast.LENGTH_LONG).show();
-            Log.e("mmm", "socket connection exception: " + ioExp.getLocalizedMessage());
+    private void prepareLiveBroadcasting() {
+        if (PhoenixChannels.getSocket(getApplicationContext()) != null &&
+                PhoenixChannels.getSocket(getApplicationContext()).isConnected()) {
+            startActivity(new Intent(getApplicationContext(), BroadcastLiveLocationMapsActivity.class));
+        } else {
+            Toast.makeText(getApplicationContext(), "No persistent connection with servers! " +
+                    "Try to restart the app or try later, plz ))", Toast.LENGTH_LONG).show();
         }
     }
 

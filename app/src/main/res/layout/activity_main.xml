@@ -52,6 +52,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/pick_btn_id"
             android:text="Pick a Place"
+            android:textColor="@color/colorOrange"
+            android:background="@drawable/full_border_orange"
+            android:padding="12dp"
             android:layout_marginBottom="4dp"
             android:layout_gravity="center_horizontal" />
 
@@ -60,6 +63,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/code_btn_id"
             android:text="Enter the Code"
+            android:textColor="@color/colorKhaki"
+            android:background="@drawable/full_border_khaki"
+            android:padding="12dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="4dp" />
 
@@ -68,6 +74,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/live_broadcasting_btn_id"
             android:text="Live broadcast position"
+            android:textColor="@color/colorPurple"
+            android:background="@drawable/full_border_purple"
+            android:padding="12dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="4dp" />
 
@@ -76,6 +85,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/live_tracking_btn_id"
             android:text="Live track position"
+            android:textColor="@color/colorYellow"
+            android:background="@drawable/full_border_yellow"
+            android:padding="12dp"
             android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
