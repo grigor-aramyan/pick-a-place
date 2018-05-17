@@ -3,18 +3,23 @@ package com.mycompany.john.pickaplace.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v4.content.res.ResourcesCompat;
+import android.os.CountDownTimer;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import com.transitionseverywhere.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +29,6 @@ import com.mycompany.john.pickaplace.models.User;
 import com.mycompany.john.pickaplace.retrofit.RetrofitInstance;
 import com.mycompany.john.pickaplace.utils.PhoenixChannels;
 import com.mycompany.john.pickaplace.utils.Statics;
-import com.transitionseverywhere.Recolor;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,6 +80,10 @@ public class MainActivity extends AppCompatActivity {
     private TextView mLoginTxt, mRegisterTxt, mLogoutTxt;
     private Button mPickAPlaceBtn, mEnterCodeBtn,
         mLiveBroadcastingBtn, mLiveTrackingBtn;
+    private ConstraintLayout mMainConstraintLayout;
+    private LinearLayout mTopLayout;
+    private ImageView mLogoIcon;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +92,74 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
 
+        initAnimation();
+
         connectSocket();
+    }
+
+    private void initAnimation() {
+        Animation scaleAnimation = AnimationUtils.loadAnimation(getApplicationContext(),
+                R.anim.scale_animation);
+        scaleAnimation.setStartOffset(5000);
+        mLogoIcon.startAnimation(scaleAnimation);
+
+        new CountDownTimer(6000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                mProgressBar.setVisibility(View.GONE);
+                implodeComponents();
+            }
+        }.start();
+
+
+    }
+
+    private void implodeComponents() {
+        TranslateAnimation translateAnimation = new TranslateAnimation(-300, 0,
+                0, 0);
+        translateAnimation.setDuration(2000);
+        translateAnimation.setInterpolator(new AccelerateInterpolator());
+        translateAnimation.setStartOffset(500);
+        mTopLayout.startAnimation(translateAnimation);
+
+        TranslateAnimation translateAnimation1 = new TranslateAnimation(0, 0,
+                300, 0);
+        translateAnimation1.setDuration(2000);
+        translateAnimation1.setInterpolator(new AccelerateInterpolator());
+        translateAnimation1.setStartOffset(500);
+        mPickAPlaceBtn.startAnimation(translateAnimation1);
+
+        TranslateAnimation translateAnimation2 = new TranslateAnimation(0, 0,
+                -300, 0);
+        translateAnimation2.setDuration(2000);
+        translateAnimation2.setInterpolator(new AccelerateInterpolator());
+        translateAnimation2.setStartOffset(500);
+        mLiveTrackingBtn.startAnimation(translateAnimation2);
+
+        TranslateAnimation translateAnimation3 = new TranslateAnimation(300, 0,
+                0, 0);
+        translateAnimation3.setDuration(2000);
+        translateAnimation3.setInterpolator(new AccelerateInterpolator());
+        translateAnimation3.setStartOffset(500);
+        mEnterCodeBtn.startAnimation(translateAnimation3);
+
+        TranslateAnimation translateAnimation4 = new TranslateAnimation(-300, 0,
+                0, 0);
+        translateAnimation4.setDuration(2000);
+        translateAnimation4.setInterpolator(new AccelerateInterpolator());
+        translateAnimation4.setStartOffset(500);
+        mLiveBroadcastingBtn.startAnimation(translateAnimation4);
+
+        mTopLayout.setVisibility(View.VISIBLE);
+        mPickAPlaceBtn.setVisibility(View.VISIBLE);
+        mLiveTrackingBtn.setVisibility(View.VISIBLE);
+        mEnterCodeBtn.setVisibility(View.VISIBLE);
+        mLiveBroadcastingBtn.setVisibility(View.VISIBLE);
     }
 
     private void connectSocket() {
@@ -428,6 +503,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_id);
+        mLogoIcon = (ImageView) findViewById(R.id.geotag_icon_id);
+        mTopLayout = (LinearLayout) findViewById(R.id.crapy_id);
+        mTopLayout.setVisibility(View.GONE);
+        mMainConstraintLayout = (ConstraintLayout) findViewById(R.id.main_container_id);
         mLogoutTxt = (TextView) findViewById(R.id.logout_link);
         mLogoutTxt.setOnClickListener(mClickListener);
         mLoginTxt = (TextView) findViewById(R.id.login_link);
@@ -436,11 +516,15 @@ public class MainActivity extends AppCompatActivity {
         mRegisterTxt.setOnClickListener(mClickListener);
         mPickAPlaceBtn = (Button) findViewById(R.id.pick_btn_id);
         mPickAPlaceBtn.setOnClickListener(mClickListener);
+        mPickAPlaceBtn.setVisibility(View.GONE);
         mEnterCodeBtn = (Button) findViewById(R.id.code_btn_id);
         mEnterCodeBtn.setOnClickListener(mClickListener);
+        mEnterCodeBtn.setVisibility(View.GONE);
         mLiveBroadcastingBtn = (Button) findViewById(R.id.live_broadcasting_btn_id);
         mLiveBroadcastingBtn.setOnClickListener(mClickListener);
+        mLiveBroadcastingBtn.setVisibility(View.GONE);
         mLiveTrackingBtn = (Button) findViewById(R.id.live_tracking_btn_id);
         mLiveTrackingBtn.setOnClickListener(mClickListener);
+        mLiveTrackingBtn.setVisibility(View.GONE);
     }
 }

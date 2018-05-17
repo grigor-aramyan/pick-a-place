@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/main_container_id"
     tools:context=".activities.MainActivity"
     android:background="@color/colorWhite"
     android:padding="13dp">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:id="@+id/crapy_id"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
 
         <View
             android:layout_width="0dp"
@@ -24,12 +28,13 @@
             android:layout_height="wrap_content"
             android:id="@+id/logout_link"
             android:text="@string/logout"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <TextView
+            android:id="@+id/login_link"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/login_link"
+            android:layout_marginRight="4dp"
             android:text="@string/login_txt" />
 
         <TextView
@@ -41,55 +46,86 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/geotag_icon_id"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:src="@drawable/geotag"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.238" />
+
+    <Button
+        android:id="@+id/pick_btn_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_centerInParent="true">
+        android:background="@drawable/full_border_orange"
+        android:padding="12dp"
+        android:text="Pick a Place"
+        android:textColor="@color/colorOrange"
+        tools:layout_editor_absoluteX="121dp"
+        tools:layout_editor_absoluteY="220dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/geotag_icon_id" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/pick_btn_id"
-            android:text="Pick a Place"
-            android:textColor="@color/colorOrange"
-            android:background="@drawable/full_border_orange"
-            android:padding="12dp"
-            android:layout_marginBottom="4dp"
-            android:layout_gravity="center_horizontal" />
+    <Button
+        android:id="@+id/code_btn_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/full_border_khaki"
+        android:padding="12dp"
+        android:text="Enter the Code"
+        android:textColor="@color/colorKhaki"
+        tools:layout_editor_absoluteX="108dp"
+        tools:layout_editor_absoluteY="271dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pick_btn_id" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/code_btn_id"
-            android:text="Enter the Code"
-            android:textColor="@color/colorKhaki"
-            android:background="@drawable/full_border_khaki"
-            android:padding="12dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="4dp" />
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/progress_bar_id"
+        style="@android:style/Widget.Holo.Light.ProgressBar.Horizontal"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/colorKhaki"
+        android:layout_marginRight="22dp"
+        android:layout_marginLeft="22dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/code_btn_id" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/live_broadcasting_btn_id"
-            android:text="Live broadcast position"
-            android:textColor="@color/colorPurple"
-            android:background="@drawable/full_border_purple"
-            android:padding="12dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="4dp" />
+    <Button
+        android:id="@+id/live_broadcasting_btn_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/full_border_purple"
+        android:padding="12dp"
+        android:text="Live broadcast position"
+        android:textColor="@color/colorPurple"
+        tools:layout_editor_absoluteX="78dp"
+        tools:layout_editor_absoluteY="323dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/code_btn_id"/>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/live_tracking_btn_id"
-            android:text="Live track position"
-            android:textColor="@color/colorYellow"
-            android:background="@drawable/full_border_yellow"
-            android:padding="12dp"
-            android:layout_gravity="center_horizontal" />
+    <Button
+        android:id="@+id/live_tracking_btn_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/full_border_yellow"
+        android:padding="12dp"
+        android:text="Live track position"
+        android:textColor="@color/colorYellow"
+        tools:layout_editor_absoluteX="94dp"
+        tools:layout_editor_absoluteY="378dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/live_broadcasting_btn_id"/>
 
-    </LinearLayout>
-
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>
