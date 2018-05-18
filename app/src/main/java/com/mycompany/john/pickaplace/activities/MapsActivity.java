@@ -179,7 +179,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private EditText mMessageEdt;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LocationCallback mLocationCallback;
-    final LocationRequest mLocationRequest = new LocationRequest();
+    private final LocationRequest mLocationRequest = new LocationRequest();
 
     private Coordinates mPickedCoordinates;
 

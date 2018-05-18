@@ -32,7 +32,9 @@ import com.mycompany.john.pickaplace.utils.Statics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.phoenixframework.channels.Envelope;
 import org.phoenixframework.channels.IErrorCallback;
+import org.phoenixframework.channels.IMessageCallback;
 import org.phoenixframework.channels.ISocketOpenCallback;
 
 import java.io.IOException;
@@ -107,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTick(long millisUntilFinished) {
 
+                if (millisUntilFinished <= 2000) {
+                    joinChannel();
+                }
             }
 
             @Override
@@ -186,6 +191,29 @@ public class MainActivity extends AppCompatActivity {
                     "and Live tracking won't be available. We are trying hard to fix issues",
                     Toast.LENGTH_LONG).show();
             Log.e("mmm", "socket connection exception: " + ioExp.getLocalizedMessage());
+        }
+    }
+
+    private void joinChannel() {
+        try {
+            PhoenixChannels.getChannel()
+                    .join()
+                    .receive("ok", new IMessageCallback() {
+                        @Override
+                        public void onMessage(Envelope envelope) {
+
+                        }
+                    })
+                    .receive("ignore", new IMessageCallback() {
+                        @Override
+                        public void onMessage(Envelope envelope) {
+                            Toast.makeText(getApplicationContext(), "Something wrong happened! Try to " +
+                                    "restart the app, plz", Toast.LENGTH_LONG).show();
+                        }
+                    });
+        } catch (IOException ioExp) {
+            Toast.makeText(getApplicationContext(), "Something wrong happened! Try to " +
+                    "restart the app, plz", Toast.LENGTH_LONG).show();
         }
     }
 

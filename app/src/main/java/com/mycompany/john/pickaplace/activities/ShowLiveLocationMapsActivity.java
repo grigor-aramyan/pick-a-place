@@ -77,6 +77,8 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        initViews();
+
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         mLocationCallback = new LocationCallback() {
@@ -106,8 +108,7 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
             mCode = getIntent().getStringExtra(Statics.LOCATION_CODE);
         }
 
-        setInitialMarker();
-        joinChannel();
+        setupMessageHandlers();
     }
 
     private void initViews() {
@@ -126,29 +127,6 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
             mMyPositionMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.baseline_face_black_24dp));
         } else {
             mMyPositionMarker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
-        }
-    }
-
-    private void joinChannel() {
-        try {
-            PhoenixChannels.getChannel()
-                    .join()
-                    .receive("ok", new IMessageCallback() {
-                        @Override
-                        public void onMessage(Envelope envelope) {
-                            setupMessageHandlers();
-                        }
-                    })
-                    .receive("ignore", new IMessageCallback() {
-                        @Override
-                        public void onMessage(Envelope envelope) {
-                            Toast.makeText(getApplicationContext(), "Something wrong happened! Try to " +
-                                    "restart the app, plz", Toast.LENGTH_LONG).show();
-                        }
-                    });
-        } catch (IOException ioExp) {
-            Toast.makeText(getApplicationContext(), "Something wrong happened! Try to " +
-                    "restart the app, plz", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -197,6 +175,8 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        setInitialMarker();
 
         createLocationRequest();
 

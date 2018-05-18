@@ -105,7 +105,7 @@ public class BroadcastLiveLocationMapsActivity extends FragmentActivity implemen
             }
         };
 
-        joinToChannel();
+        setupMessageHandlers();
     }
 
     private void initViews() {
@@ -113,29 +113,6 @@ public class BroadcastLiveLocationMapsActivity extends FragmentActivity implemen
         mInfoEdt.setEnabled(false);
         mCodeEdt = (EditText) findViewById(R.id.code_edt_id);
         mCodeEdt.setEnabled(false);
-    }
-
-    private void joinToChannel() {
-        try {
-            PhoenixChannels.getChannel()
-                    .join()
-                    .receive("ok", new IMessageCallback() {
-                        @Override
-                        public void onMessage(Envelope envelope) {
-                            setupMessageHandlers();
-                        }
-                    })
-                    .receive("ignore", new IMessageCallback() {
-                        @Override
-                        public void onMessage(Envelope envelope) {
-                            Toast.makeText(getApplicationContext(), "Something wrong happened! Try to " +
-                                    "restart the app, plz", Toast.LENGTH_LONG).show();
-                        }
-                    });
-        } catch (IOException ioExp) {
-            Toast.makeText(getApplicationContext(), "Something wrong happened! Try to " +
-                    "restart the app, plz", Toast.LENGTH_LONG).show();
-        }
     }
 
     private void setupMessageHandlers() {
