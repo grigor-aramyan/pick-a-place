@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.CountDownTimer;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -84,13 +85,16 @@ public class MainActivity extends AppCompatActivity {
         mLiveBroadcastingBtn, mLiveTrackingBtn;
     private ConstraintLayout mMainConstraintLayout;
     private LinearLayout mTopLayout;
-    private ImageView mLogoIcon;
+    private ImageView mLogoIcon, mAppNameStyledImg;
     private ProgressBar mProgressBar;
+    private ActionBar mActionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getSupportActionBar().hide();
 
         initViews();
 
@@ -116,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
+                getSupportActionBar().show();
+                mAppNameStyledImg.setVisibility(View.GONE);
                 mProgressBar.setVisibility(View.GONE);
                 implodeComponents();
             }
@@ -531,6 +537,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        mAppNameStyledImg = (ImageView) findViewById(R.id.app_name_img_id);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_id);
         mLogoIcon = (ImageView) findViewById(R.id.geotag_icon_id);
         mTopLayout = (LinearLayout) findViewById(R.id.crapy_id);
@@ -544,10 +551,10 @@ public class MainActivity extends AppCompatActivity {
         mRegisterTxt.setOnClickListener(mClickListener);
         mPickAPlaceBtn = (Button) findViewById(R.id.pick_btn_id);
         mPickAPlaceBtn.setOnClickListener(mClickListener);
-        mPickAPlaceBtn.setVisibility(View.GONE);
+        mPickAPlaceBtn.setVisibility(View.INVISIBLE);
         mEnterCodeBtn = (Button) findViewById(R.id.code_btn_id);
         mEnterCodeBtn.setOnClickListener(mClickListener);
-        mEnterCodeBtn.setVisibility(View.GONE);
+        mEnterCodeBtn.setVisibility(View.INVISIBLE);
         mLiveBroadcastingBtn = (Button) findViewById(R.id.live_broadcasting_btn_id);
         mLiveBroadcastingBtn.setOnClickListener(mClickListener);
         mLiveBroadcastingBtn.setVisibility(View.GONE);

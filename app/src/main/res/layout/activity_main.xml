@@ -85,6 +85,17 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/pick_btn_id" />
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/app_name_img_id"
+        android:src="@drawable/app_name_logo"
+        android:layout_marginLeft="38dp"
+        android:layout_marginRight="38dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/code_btn_id"/>
+
     <ProgressBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -96,7 +107,7 @@
         android:layout_marginLeft="22dp"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/code_btn_id" />
+        app:layout_constraintTop_toBottomOf="@id/app_name_img_id" />
 
     <Button
         android:id="@+id/live_broadcasting_btn_id"
