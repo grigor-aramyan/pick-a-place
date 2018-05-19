@@ -2,10 +2,12 @@
     <string name="app_name">Pick A Place</string>
     <string name="login_txt"><u>Login</u></string>
     <string name="register_txt"><u>Register</u></string>
-    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_maps">Pick...</string>
     <string name="logout"><u>Logout</u></string>
-    <string name="title_activity_show_location_maps">Map</string>
-    <string name="title_activity_show_live_location_maps">Map</string>
-    <string name="title_activity_broadcast_live_location_maps">Map</string>
+    <string name="title_activity_show_location_maps">Location</string>
+    <string name="title_activity_show_live_location_maps">Live Location</string>
+    <string name="title_activity_broadcast_live_location_maps">Broadcast</string>
     <string name="back_to_main"><u>back to main</u></string>
+    <string name="title_activity_register">Register</string>
+    <string name="title_activity_summary">Summary</string>
 </resources>
