@@ -6,6 +6,7 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -88,6 +89,7 @@ public class ShowLocationMapsActivity extends FragmentActivity implements OnMapR
             final String message = getIntent().getStringExtra(Statics.LOCATION_MESSAGE);
             if (message != null && !message.equals("null") && !message.isEmpty()) {
                 mMessageEdt.setText(message);
+                mMessageEdt.setTextColor(ResourcesCompat.getColor(getResources(), R.color.colorBlack, null));
             }
         }
     }

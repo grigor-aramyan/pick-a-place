@@ -10,6 +10,7 @@
     <color name="colorOrange">#FF9800</color>
     <color name="colorKhaki">#4CAF50</color>
     <color name="colorGreyLight">#EEEEEE</color>
+    <color name="colorGreyBold">#BDBDBD</color>
     <color name="colorGreyOpaque">#BDBDBD80</color>
     <color name="colorPurple">#AB47BC</color>
     <color name="colorYellow">#FFFF00</color>

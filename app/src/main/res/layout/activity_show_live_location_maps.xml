@@ -39,8 +39,20 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/msg_edt_id"
+            android:text="No message for this location"
+            android:textColor="@color/colorOrange"
+            android:padding="4dp"
+            android:background="@drawable/full_border"
+            android:inputType="none"
+            android:layout_marginBottom="2dp"/>
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/code_edt_id"
             android:hint="Shared Code"
+            android:textColor="@color/colorGreyBold"
             android:padding="4dp"
             android:background="@drawable/full_border"
             android:inputType="none" />

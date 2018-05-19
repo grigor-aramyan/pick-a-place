@@ -106,6 +106,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                                         final String code = data.getJSONObject("data").getString("code");
                                                         final String message = data.getJSONObject("data").getString("message");
 
+                                                        mUsed = true;
+
                                                         startActivity(new Intent(getApplicationContext(), SummaryActivity.class)
                                                                 .putExtra("code", code));
                                                     }
@@ -143,6 +145,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         final String code = data.getJSONObject("data").getString("code");
                                         final String message = data.getJSONObject("data").getString("message");
 
+                                        mUsed = true;
+
                                         startActivity(new Intent(getApplicationContext(), SummaryActivity.class)
                                                 .putExtra("code", code));
                                     }
@@ -169,6 +173,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     };
+
+    // data
+    private boolean mUsed = false;
 
     // finals
     private final String TAG = "tag-for-marker";
@@ -333,6 +340,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .draggable(true)).setTag(TAG);
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
             }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (mUsed) {
+            finish();
         }
     }
 

@@ -62,7 +62,7 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
     // ui components
     private Marker mLivePositionMarker;
     private Marker mMyPositionMarker;
-    private EditText mInfoEdt, mCodeEdt;
+    private EditText mInfoEdt, mCodeEdt, mMsgEdt;
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LocationCallback mLocationCallback;
@@ -102,16 +102,23 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
         }
         if (getIntent().hasExtra(Statics.LOCATION_MESSAGE)) {
             final String message = getIntent().getStringExtra(Statics.LOCATION_MESSAGE);
+            if (!message.equals("null") && !message.isEmpty()) {
+                mMsgEdt.setText(message);
+                mMsgEdt.setTextColor(ResourcesCompat.getColor(getResources(), R.color.colorBlack, null));
+            }
 
         }
         if (getIntent().hasExtra(Statics.LOCATION_CODE)) {
             mCode = getIntent().getStringExtra(Statics.LOCATION_CODE);
+            mCodeEdt.setText("Shared Code: " + mCode);
         }
 
         setupMessageHandlers();
     }
 
     private void initViews() {
+        mMsgEdt = (EditText) findViewById(R.id.msg_edt_id);
+        mMsgEdt.setEnabled(false);
         mInfoEdt = (EditText) findViewById(R.id.info_edt_id);
         mInfoEdt.setEnabled(false);
         mCodeEdt = (EditText) findViewById(R.id.code_edt_id);

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +18,9 @@ public class SummaryActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
+                case R.id.back_to_main_btn_id:
+                    finish();
+                    break;
                 case R.id.fb_icon:
                     Shareable shareAction = new Shareable.Builder(that)
                             .message("Pick a Place code: " + mCode)
@@ -47,6 +51,7 @@ public class SummaryActivity extends AppCompatActivity {
     // UI components
     private ImageView mFBIcon, mTwitterIcon, mGPIcon;
     private TextView mCodeTxt;
+    private Button mBackBtn;
 
     // data
     private String mCode;
@@ -79,6 +84,8 @@ public class SummaryActivity extends AppCompatActivity {
     private void initViews() {
         mCodeTxt = (TextView) findViewById(R.id.code_txt_id);
 
+        mBackBtn = (Button) findViewById(R.id.back_to_main_btn_id);
+        mBackBtn.setOnClickListener(mClickListener);
         mFBIcon = (ImageView) findViewById(R.id.fb_icon);
         mFBIcon.setOnClickListener(mClickListener);
         mTwitterIcon = (ImageView) findViewById(R.id.twitter_icon);
