@@ -27,6 +27,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -69,7 +70,7 @@ public class BroadcastLiveLocationMapsActivity extends FragmentActivity implemen
     // map related
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private LocationCallback mLocationCallback;
-    final LocationRequest mLocationRequest = new LocationRequest();
+    private final LocationRequest mLocationRequest = new LocationRequest();
     private Marker mMyPositionMarker;
 
     // ui components
@@ -195,6 +196,7 @@ public class BroadcastLiveLocationMapsActivity extends FragmentActivity implemen
         mMyPositionMarker = mMap.addMarker(new MarkerOptions()
                 .position(currentPosition)
                 .title("You are here"));
+        mMyPositionMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.twotone_location_on_black_24));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.0f));
     }
 

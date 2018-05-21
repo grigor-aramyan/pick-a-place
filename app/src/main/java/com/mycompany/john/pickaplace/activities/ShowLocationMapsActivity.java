@@ -131,6 +131,7 @@ public class ShowLocationMapsActivity extends FragmentActivity implements OnMapR
             // Add a marker in Sydney and move the camera
             LatLng customLocation = new LatLng(Double.parseDouble(mLatitude), Double.parseDouble(mLongitude));
             mTrackedLocationMarker = mMap.addMarker(new MarkerOptions().position(customLocation).title("Picked Location"));
+            mTrackedLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.twotone_location_on_black_24));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(customLocation, 15.0f));
         } else {
             // Add a marker in Sydney and move the camera

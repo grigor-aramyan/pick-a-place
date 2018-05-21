@@ -165,6 +165,7 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
         mLivePositionMarker = mMap.addMarker(new MarkerOptions()
                 .position(currentPosition)
                 .title("Live position"));
+        mLivePositionMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.twotone_location_on_black_24));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 15.0f));
 
     }
