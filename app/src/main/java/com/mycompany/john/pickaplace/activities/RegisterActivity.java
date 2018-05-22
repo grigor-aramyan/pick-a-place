@@ -1,6 +1,7 @@
 package com.mycompany.john.pickaplace.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import com.mycompany.john.pickaplace.R;
 import com.mycompany.john.pickaplace.models.User;
 import com.mycompany.john.pickaplace.models.UserWrapper;
 import com.mycompany.john.pickaplace.retrofit.RetrofitInstance;
+import com.mycompany.john.pickaplace.utils.Statics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -90,6 +92,12 @@ public class RegisterActivity extends AppCompatActivity {
                                     JSONObject data = new JSONObject(response.body().string());
                                     final String id = data.getJSONObject("data").getString("id");
                                     final String email = data.getJSONObject("data").getString("email");
+
+                                    SharedPreferences sharedPreferences = getSharedPreferences(Statics.SHARED_PREF_FOR_APP, MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putString(Statics.CURRENT_USER_EMAIL, email);
+                                    editor.putString(Statics.CURRENT_USER_ID, id);
+                                    editor.commit();
 
                                     Log.e("mmm", "reged: id: " + id + "\nmail: " + email);
                                     finish();

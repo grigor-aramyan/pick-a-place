@@ -51,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
+                case R.id.history_img_id:
+                    gotoHistoryPage();
+                    break;
                 case R.id.live_broadcasting_btn_id:
                     prepareLiveBroadcasting();
                     break;
@@ -85,9 +88,8 @@ public class MainActivity extends AppCompatActivity {
         mLiveBroadcastingBtn, mLiveTrackingBtn;
     private ConstraintLayout mMainConstraintLayout;
     private LinearLayout mTopLayout;
-    private ImageView mLogoIcon, mAppNameStyledImg;
+    private ImageView mLogoIcon, mAppNameStyledImg, mHistoryImg;
     private ProgressBar mProgressBar;
-    private ActionBar mActionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +103,10 @@ public class MainActivity extends AppCompatActivity {
         initAnimation();
 
         connectSocket();
+    }
+
+    private void gotoHistoryPage() {
+        startActivity(new Intent(getApplicationContext(), HistoryActivity.class));
     }
 
     private void initAnimation() {
@@ -341,6 +347,7 @@ public class MainActivity extends AppCompatActivity {
                             editor.remove(Statics.CURRENT_USER_EMAIL);
                             editor.commit();
 
+                            mHistoryImg.setVisibility(View.GONE);
                             mLogoutTxt.setVisibility(View.GONE);
                             mLoginTxt.setVisibility(View.VISIBLE);
                             mRegisterTxt.setVisibility(View.VISIBLE);
@@ -417,6 +424,7 @@ public class MainActivity extends AppCompatActivity {
                                             mLoginTxt.setVisibility(View.GONE);
                                             mRegisterTxt.setVisibility(View.GONE);
                                             mLogoutTxt.setVisibility(View.VISIBLE);
+                                            mHistoryImg.setVisibility(View.VISIBLE);
 
                                             Toast.makeText(getApplicationContext(), "Signed in!",
                                                     Toast.LENGTH_LONG).show();
@@ -537,6 +545,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        mHistoryImg = (ImageView) findViewById(R.id.history_img_id);
+        mHistoryImg.setOnClickListener(mClickListener);
         mAppNameStyledImg = (ImageView) findViewById(R.id.app_name_img_id);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_id);
         mLogoIcon = (ImageView) findViewById(R.id.geotag_icon_id);
@@ -561,5 +571,18 @@ public class MainActivity extends AppCompatActivity {
         mLiveTrackingBtn = (Button) findViewById(R.id.live_tracking_btn_id);
         mLiveTrackingBtn.setOnClickListener(mClickListener);
         mLiveTrackingBtn.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        SharedPreferences sharedPreferences = getSharedPreferences(Statics.SHARED_PREF_FOR_APP, MODE_PRIVATE);
+        if (!sharedPreferences.getString(Statics.CURRENT_USER_ID, "").isEmpty()) {
+            mLoginTxt.setVisibility(View.GONE);
+            mRegisterTxt.setVisibility(View.GONE);
+            mLogoutTxt.setVisibility(View.VISIBLE);
+            mHistoryImg.setVisibility(View.VISIBLE);
+        }
     }
 }
