@@ -134,10 +134,14 @@ public class ShowLocationMapsActivity extends FragmentActivity implements OnMapR
             mTrackedLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.twotone_location_on_black_24));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(customLocation, 15.0f));
         } else {
+            Toast.makeText(getApplicationContext(), "Can't locate coordinates of picked position! " +
+                    "Something wrong with data on the server side... We are trying hard to solve all " +
+                    "issues that occur. Thanks for bearing with us ))", Toast.LENGTH_LONG).show();
+
             // Add a marker in Sydney and move the camera
-            LatLng sydney = new LatLng(-34, 151);
+            /*LatLng sydney = new LatLng(-34, 151);
             mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
         }
     }
 
@@ -192,8 +196,9 @@ public class ShowLocationMapsActivity extends FragmentActivity implements OnMapR
                             mLocationCallback,
                             null);
                 } catch (SecurityException sExp) {
-                    Toast.makeText(getApplicationContext(), "Can't find your MyCustomLocation." +
-                            " Try to drag and drop marker to check needed place from here", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Can't find your current position." +
+                            " We won't show live marker for you on the map, as your position " +
+                            "is unavailable. Sorry!", Toast.LENGTH_LONG).show();
                 }
             } else {
                 Toast.makeText(getApplicationContext(), "Can't locate your position! Try to " +

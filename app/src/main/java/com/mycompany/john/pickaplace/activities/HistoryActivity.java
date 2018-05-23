@@ -95,7 +95,6 @@ public class HistoryActivity extends AppCompatActivity {
                             mEmptyListTxt.setVisibility(View.VISIBLE);
                         }
 
-                        Log.e("mmm", "data: " + data.toString());
                     } catch (IOException ioExp) {
                         Toast.makeText(getApplicationContext(), "Something wrong with app! " +
                                 "Try to restart it, plz", Toast.LENGTH_LONG).show();

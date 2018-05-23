@@ -245,8 +245,9 @@ public class ShowLiveLocationMapsActivity extends FragmentActivity implements On
                             mLocationCallback,
                             null);
                 } catch (SecurityException sExp) {
-                    Toast.makeText(getApplicationContext(), "Can't find your MyCustomLocation." +
-                            " Try to drag and drop marker to check needed place from here", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Can't find your current position." +
+                            " You are receiving updates on tracked live position, but your current " +
+                            "position is unavailable now. Sorry!", Toast.LENGTH_LONG).show();
                 }
             } else {
                 Toast.makeText(getApplicationContext(), "Can't locate your position! Try to " +
