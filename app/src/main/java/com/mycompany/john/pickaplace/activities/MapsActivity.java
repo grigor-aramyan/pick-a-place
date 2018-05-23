@@ -4,12 +4,12 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,8 +37,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.mycompany.john.pickaplace.R;
 import com.mycompany.john.pickaplace.models.Coordinates;
+import com.mycompany.john.pickaplace.models.CoordinatesExtended;
 import com.mycompany.john.pickaplace.models.MyCustomLocation;
 import com.mycompany.john.pickaplace.retrofit.RetrofitInstance;
+import com.mycompany.john.pickaplace.utils.Statics;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -95,8 +97,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        Call<ResponseBody> call = RetrofitInstance.getBackendService(getApplicationContext())
-                                                .createAnonymousLocation(new MyCustomLocation(mPickedCoordinates));
+                                        SharedPreferences sharedPreferences = getSharedPreferences(Statics.SHARED_PREF_FOR_APP,
+                                                MODE_PRIVATE);
+                                        final String user_id = sharedPreferences.getString(Statics.CURRENT_USER_ID, "");
+
+                                        Call<ResponseBody> call = null;
+                                        if (!user_id.isEmpty()) {
+                                            final CoordinatesExtended extended = new CoordinatesExtended(mPickedCoordinates.getLatitude(),
+                                                    mPickedCoordinates.getLongitude(), mPickedCoordinates.getMessage(),
+                                                    Integer.parseInt(user_id));
+                                            call = RetrofitInstance.getBackendService(getApplicationContext())
+                                                    .createAnonymousLocation(new MyCustomLocation(extended));
+                                        } else {
+                                            call = RetrofitInstance.getBackendService(getApplicationContext())
+                                                    .createAnonymousLocation(new MyCustomLocation(mPickedCoordinates));
+                                        }
+
                                         call.enqueue(new Callback<ResponseBody>() {
                                             @Override
                                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -134,8 +150,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         builder.create().show();
                     } else {
                         mPickedCoordinates.setMessage(message);
-                        Call<ResponseBody> call = RetrofitInstance.getBackendService(getApplicationContext())
-                                .createAnonymousLocation(new MyCustomLocation(mPickedCoordinates));
+
+                        SharedPreferences sharedPreferences = getSharedPreferences(Statics.SHARED_PREF_FOR_APP, MODE_PRIVATE);
+                        final String user_id = sharedPreferences.getString(Statics.CURRENT_USER_ID, "");
+
+                        Call<ResponseBody> call = null;
+                        if (user_id.isEmpty()) {
+                            call = RetrofitInstance.getBackendService(getApplicationContext())
+                                    .createAnonymousLocation(new MyCustomLocation(mPickedCoordinates));
+                        } else {
+                            final CoordinatesExtended extended = new CoordinatesExtended(mPickedCoordinates.getLatitude(),
+                                    mPickedCoordinates.getLongitude(), mPickedCoordinates.getMessage(),
+                                    Integer.parseInt(user_id));
+                            call = RetrofitInstance.getBackendService(getApplicationContext())
+                                    .createAnonymousLocation(new MyCustomLocation(extended));
+                        }
+
                         call.enqueue(new Callback<ResponseBody>() {
                             @Override
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

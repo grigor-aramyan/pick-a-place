@@ -2,6 +2,7 @@ package com.mycompany.john.pickaplace.activities;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
@@ -38,9 +39,11 @@ import com.mycompany.john.pickaplace.R;
 import com.mycompany.john.pickaplace.eventBusModels.DeleteBroadcastedLiveLocationRecordEvent;
 import com.mycompany.john.pickaplace.eventBusModels.UpdateBroadcastedLocationEvent;
 import com.mycompany.john.pickaplace.models.Coordinates;
+import com.mycompany.john.pickaplace.models.CoordinatesExtended;
 import com.mycompany.john.pickaplace.models.MyCustomLocation;
 import com.mycompany.john.pickaplace.retrofit.RetrofitInstance;
 import com.mycompany.john.pickaplace.utils.PhoenixChannels;
+import com.mycompany.john.pickaplace.utils.Statics;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -150,9 +153,22 @@ public class BroadcastLiveLocationMapsActivity extends FragmentActivity implemen
     }
 
     private void createInitialData(Location location) {
-        Call<ResponseBody> call = RetrofitInstance.getBackendService(getApplicationContext())
-                .createLiveAnonymousLocation(new MyCustomLocation(new Coordinates(location.getLatitude() + "",
-                        location.getLongitude() + "", "")));
+        SharedPreferences sharedPreferences = getSharedPreferences(Statics.SHARED_PREF_FOR_APP, MODE_PRIVATE);
+        final String user_id = sharedPreferences.getString(Statics.CURRENT_USER_ID, "");
+
+        Call<ResponseBody> call = null;
+        if (user_id.isEmpty()) {
+            call = RetrofitInstance.getBackendService(getApplicationContext())
+                    .createLiveAnonymousLocation(new MyCustomLocation(new Coordinates(location.getLatitude() + "",
+                            location.getLongitude() + "", "")));
+        } else {
+            final CoordinatesExtended extended = new CoordinatesExtended(location.getLatitude() + "",
+                    location.getLongitude() + "", "", Integer.parseInt(user_id));
+
+            call = RetrofitInstance.getBackendService(getApplicationContext())
+                    .createLiveAnonymousLocation(new MyCustomLocation(extended));
+        }
+
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
