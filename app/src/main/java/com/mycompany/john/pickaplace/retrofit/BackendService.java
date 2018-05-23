@@ -3,6 +3,7 @@ package com.mycompany.john.pickaplace.retrofit;
 import com.mycompany.john.pickaplace.models.LocationCode;
 import com.mycompany.john.pickaplace.models.MyCustomLocation;
 import com.mycompany.john.pickaplace.models.User;
+import com.mycompany.john.pickaplace.models.UserId;
 import com.mycompany.john.pickaplace.models.UserWrapper;
 
 import okhttp3.ResponseBody;
@@ -40,4 +41,8 @@ public interface BackendService {
     @Headers("Content-Type: application/json")
     @POST("api/locations/get_live_location")
     Call<ResponseBody> getLiveLocationByCode(@Body LocationCode locationCode);
+
+    @Headers("Content-Type: application/json")
+    @POST("api/locations//get_locations_by_user_id")
+    Call<ResponseBody> getLocationsByUserId(@Body UserId user_id);
 }
