@@ -11,4 +11,5 @@
     <string name="title_activity_register">Register</string>
     <string name="title_activity_summary">Summary</string>
     <string name="broadcast_attn">Attention!! Hold this screen open, folks )) otherwise, broadcasting will stop</string>
+    <string name="copy_info">\u00A9 2018, Grigori Aramyan</string>
 </resources>

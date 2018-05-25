@@ -68,8 +68,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         public void onMarkerDragEnd(Marker marker) {
             if (marker.getTag().equals(TAG)) {
-                Toast.makeText(getApplicationContext(), "lang: " + marker.getPosition().latitude,
-                        Toast.LENGTH_LONG).show();
 
                 mPickedCoordinates = new Coordinates(marker.getPosition().latitude + "",
                         marker.getPosition().longitude + "", "");

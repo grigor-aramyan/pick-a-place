@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
                     break;
                 case R.id.pick_btn_id:
-                    Toast.makeText(getApplicationContext(), "pick...", Toast.LENGTH_LONG).show();
                     startActivity(new Intent(getApplicationContext(), MapsActivity.class));
                     break;
                 case R.id.code_btn_id:
