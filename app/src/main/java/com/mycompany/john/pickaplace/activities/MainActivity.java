@@ -3,6 +3,7 @@ package com.mycompany.john.pickaplace.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.CountDownTimer;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.ActionBar;
@@ -10,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -90,18 +92,38 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mLogoIcon, mAppNameStyledImg, mHistoryImg;
     private ProgressBar mProgressBar;
 
+    // data
+    private static boolean sChannelJoined = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getSupportActionBar().hide();
+        connectSocket();
 
         initViews();
 
-        initAnimation();
+        int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT &&
+                !sChannelJoined) {
+            getSupportActionBar().hide();
 
-        connectSocket();
+            initAnimation();
+        } else {
+            if (!sChannelJoined) {
+                joinChannel();
+            }
+
+            mAppNameStyledImg.setVisibility(View.GONE);
+            mProgressBar.setVisibility(View.GONE);
+
+            mTopLayout.setVisibility(View.VISIBLE);
+            mPickAPlaceBtn.setVisibility(View.VISIBLE);
+            mLiveTrackingBtn.setVisibility(View.VISIBLE);
+            mEnterCodeBtn.setVisibility(View.VISIBLE);
+            mLiveBroadcastingBtn.setVisibility(View.VISIBLE);
+        }
     }
 
     private void gotoHistoryPage() {
@@ -119,7 +141,9 @@ public class MainActivity extends AppCompatActivity {
             public void onTick(long millisUntilFinished) {
 
                 if (millisUntilFinished <= 2000) {
-                    joinChannel();
+                    if (!sChannelJoined) {
+                        joinChannel();
+                    }
                 }
             }
 
@@ -212,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
                     .receive("ok", new IMessageCallback() {
                         @Override
                         public void onMessage(Envelope envelope) {
-
+                            sChannelJoined = true;
                         }
                     })
                     .receive("ignore", new IMessageCallback() {
