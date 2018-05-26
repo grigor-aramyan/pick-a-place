@@ -3,6 +3,8 @@ package com.mycompany.john.pickaplace.utils;
 public class Statics {
     public static final String LOCALHOST_IP = "192.168.1.3";
 
+    public static final String ADMOB_APP_ID = "ca-app-pub-2872495327295128~5833412897";
+
     public static final String SHARED_PREF_FOR_APP = "shared-pref-for-app";
     public static final String CURRENT_USER_ID = "current-user-id";
     public static final String CURRENT_USER_EMAIL = "current-user-email";

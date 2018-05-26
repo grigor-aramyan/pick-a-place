@@ -26,6 +26,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.mycompany.john.pickaplace.R;
 import com.mycompany.john.pickaplace.models.LocationCode;
 import com.mycompany.john.pickaplace.models.User;
@@ -91,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout mTopLayout;
     private ImageView mLogoIcon, mAppNameStyledImg, mHistoryImg;
     private ProgressBar mProgressBar;
+    private AdView mBottomAdView;
 
     // data
     private static boolean sChannelJoined = false;
@@ -101,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         connectSocket();
+
+        MobileAds.initialize(this, Statics.ADMOB_APP_ID);
 
         initViews();
 
@@ -123,6 +130,29 @@ public class MainActivity extends AppCompatActivity {
             mLiveTrackingBtn.setVisibility(View.VISIBLE);
             mEnterCodeBtn.setVisibility(View.VISIBLE);
             mLiveBroadcastingBtn.setVisibility(View.VISIBLE);
+        }
+
+        fetchAds();
+    }
+
+    private void fetchAds() {
+        if (null != mBottomAdView) {
+            AdRequest request = new AdRequest.Builder().build();
+            mBottomAdView.loadAd(request);
+
+            new CountDownTimer(2000, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+
+                }
+
+                @Override
+                public void onFinish() {
+                    if (null != mBottomAdView) {
+                        mBottomAdView.setVisibility(View.VISIBLE);
+                    }
+                }
+            }.start();
         }
     }
 
@@ -155,8 +185,6 @@ public class MainActivity extends AppCompatActivity {
                 implodeComponents();
             }
         }.start();
-
-
     }
 
     private void implodeComponents() {
@@ -568,6 +596,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        if (null != findViewById(R.id.bottom_adview_id)) {
+            mBottomAdView = (AdView) findViewById(R.id.bottom_adview_id);
+            mBottomAdView.setVisibility(View.GONE);
+        }
         mHistoryImg = (ImageView) findViewById(R.id.history_img_id);
         mHistoryImg.setOnClickListener(mClickListener);
         mAppNameStyledImg = (ImageView) findViewById(R.id.app_name_img_id);

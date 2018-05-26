@@ -12,4 +12,5 @@
     <string name="title_activity_summary">Summary</string>
     <string name="broadcast_attn">Attention!! Hold this screen open, folks )) otherwise, broadcasting will stop</string>
     <string name="copy_info">\u00A9 2018, Grigori Aramyan</string>
+    <string name="admob_test_banner_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 </resources>
