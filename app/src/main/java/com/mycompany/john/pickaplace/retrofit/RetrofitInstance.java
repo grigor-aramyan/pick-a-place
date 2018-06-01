@@ -30,7 +30,7 @@ public class RetrofitInstance {
             client = builder.build();
 
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://" + Statics.LOCALHOST_IP + ":4000/")
+                    .baseUrl("http://" + Statics.LOCALHOST_IP + "/")
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();

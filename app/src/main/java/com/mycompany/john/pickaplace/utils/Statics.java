@@ -1,7 +1,8 @@
 package com.mycompany.john.pickaplace.utils;
 
 public class Statics {
-    public static final String LOCALHOST_IP = "192.168.1.3";
+    public static final String LOCALHOST_IP = "192.168.1.8:4000";
+    public static final String BACKEND_URI = "pap-backend.herokuapp.com";
 
     public static final String ADMOB_APP_ID = "ca-app-pub-2872495327295128~5833412897";
 

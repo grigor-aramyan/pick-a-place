@@ -14,7 +14,7 @@ public class PhoenixChannels {
     private static Socket socket;
     private static Channel channel;
 
-    private static String SOCKET_URI = "ws://" + Statics.LOCALHOST_IP + ":4000/socket/websocket";
+    private static String SOCKET_URI = "ws://" + Statics.LOCALHOST_IP + "/socket/websocket";
     public static String CHANNEL_NAME = "live_tracking:general";
 
     // channel messages
