@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
     // data
     private static boolean sChannelJoined = false;
+    private boolean mSocketConnected = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -235,15 +236,13 @@ public class MainActivity extends AppCompatActivity {
                 .onOpen(new ISocketOpenCallback() {
                     @Override
                     public void onOpen() {
+                        mSocketConnected = true;
                         Log.e("mmm", "socket opened");
                     }
                 })
                 .onError(new IErrorCallback() {
                     @Override
                     public void onError(String reason) {
-                        Toast.makeText(getApplicationContext(), "Problems occured! Live position broadcasting " +
-                                        "and Live tracking won't be available. We are trying hard to fix issues",
-                                Toast.LENGTH_LONG).show();
                         Log.e("mmm", "socket connection error: " + reason);
                     }
                 });
@@ -258,6 +257,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void joinChannel() {
+        if (!mSocketConnected) {
+            Toast.makeText(getApplicationContext(), "Check your internet connection, plz! Live position broadcasting " +
+                            "and Live tracking won't be available",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
         try {
             PhoenixChannels.getChannel()
                     .join()
@@ -265,6 +271,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onMessage(Envelope envelope) {
                             sChannelJoined = true;
+                            Log.e("mmm", "channel joined");
                         }
                     })
                     .receive("ignore", new IMessageCallback() {
